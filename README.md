@@ -298,7 +298,7 @@ Para compartir un perfil:
 Para la version compilada Google Drive
 [TimerOverlay 1.0.0.0](https://drive.google.com/drive/folders/1UDc2Sgln58FfGDIaIzJRRJ1dIxqwkd5w?usp=sharing)
 
-# 🙌 Apoya Esta Herramienta
+# 🙌 Apoya
 
 Esta pequeña app la hice por mi cuenta, programando la mayor parte del código yo mismo, aunque mucho del código fue generado con ayuda de IA.  
 Invertí mi tiempo libre con el objetivo de mejorar un poco la experiencia de juego para todos. No es un gran proyecto, simplemente una herramienta pensada para que todo lo que ofrece esté disponible in-game lo más pronto posible.
