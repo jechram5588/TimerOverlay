@@ -190,13 +190,70 @@ La clase `Form_TimerOverlay` se conecta con `GlobalKeyboardHook` para detectar *
 
 ---
 
-## 🧱 Persistencia de perfiles
+## 🧱 Perfiles
 
 - Los cuadros pueden **exportarse** y **restaurarse** con todos sus parámetros visuales y funcionales.  
 - Usa `TimerStorage.Guardar()` y `TimerStorage.CargarPerfil()` para manejar archivos `.json`.  
 - Guarda: posición, imagen, tamaño, fuente, modo, animación, sonidos y tecla asignada.
 
+📁 Carpeta `profiles/`
+
+Dentro de la carpeta `profiles/` se almacenan todos los perfiles de temporizadores creados o guardados por el usuario.  
+Cada perfil se guarda como un archivo `.json` que contiene la configuración completa de uno o varios cuadros temporizadores.
+
 ---
+
+### 🧾 ¿Qué contiene cada archivo?
+
+Cada archivo `.json` incluye información como:
+
+- 📍 Posición en pantalla (`X`, `Y`)
+- ⏱️ Tiempo configurado
+- 🖼️ Imagen codificada en **Base64**
+- 🔊 Nombre del sonido de alerta asociado
+- 🧩 Función del temporizador (Temporizador, Cronómetro, Contador, etc.)
+- ⌨️ Tecla global asignada
+- 🔢 Contador inicial
+- 📐 Dimensiones (`Ancho`, `Alto`)
+- 🔤 Tamaño de la fuente
+- 🎞️ Tipo de animación
+- 🎵 Sonido para el cooldown (si aplica)
+
+---
+
+### 💡 Ejemplo de estructura JSON
+
+```json
+{
+  "X": 881,
+  "Y": 172,
+  "Tiempo": 595,
+  "ImagenBase64": "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAB...",
+  "SonidoAlerta": "bling.wav",
+  "Funcion": "Temporizador",
+  "Tecla": 123,
+  "Contador": 10,
+  "Alto": 150,
+  "Ancho": 150,
+  "TamañoFuente": 20,
+  "Animacion": "MostrarConCD",
+  "SonidoCD": "Ninguno"
+}
+```
+### 📤 Compartir perfiles
+
+Los archivos `.json` en la carpeta `profiles/` están diseñados para ser **compartidos fácilmente** entre usuarios.
+
+🔐 Las imágenes se codifican dentro del archivo en formato **Base64**, por lo que no necesitas enviar archivos separados para que otro usuario vea la misma imagen al cargar el perfil.
+
+Para compartir un perfil:
+
+1. 📁 Ubica el archivo `.json` dentro de tu carpeta `profiles/`.
+2. 📤 Envíalo a otro jugador (por correo, Discord, etc.).
+3. 📥 El otro jugador debe colocar ese archivo en su propia carpeta `profiles/`.
+
+✅ Al cargar el perfil, se restaurarán la posición, imagen, función y configuración exacta del temporizador.
+
 
 ## 🔧 Dependencias
 

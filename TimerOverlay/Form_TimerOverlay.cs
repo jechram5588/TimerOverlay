@@ -569,7 +569,7 @@ namespace TimerOverlay
         public void ObtenerPerfiles()
         {
             PerfilesApp.Clear();
-            PerfilesApp = TimerStorage.ObtenerPerfiles(Application.StartupPath);
+            PerfilesApp = TimerStorage.ObtenerPerfiles();
         }
         public void AgregaCuadro()
         {
