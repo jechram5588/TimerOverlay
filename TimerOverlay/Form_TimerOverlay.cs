@@ -166,7 +166,7 @@ namespace TimerOverlay
             timerRun = new Timer();
             timerRun.Interval = 1000;
             timerRun.Tick += timerRun_Tick;
-            timerRun.Start();
+            //timerRun.Start();
 
             timerStop = new Timer();
             timerStop.Interval = 500;
@@ -201,8 +201,6 @@ namespace TimerOverlay
 
             GlobalKeyboardHook.OnKeyPressed += GlobalKeyboardHook_OnKeyPressed;
             GlobalKeyboardHook.Start();
-
-            Reiniciar();
         }
         #endregion
 
