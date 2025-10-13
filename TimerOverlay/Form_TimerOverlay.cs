@@ -1074,6 +1074,7 @@ namespace TimerOverlay
 
             exportar.Click += (s, e) =>
             {
+                ObtenerPerfiles();
                 // Crear ventana
                 Form ventana = new Form()
                 {
