@@ -864,13 +864,13 @@ namespace TimerOverlay
                 })
                 {
                     var lbAncho = new Label() { Text = "Ancho", Location = new Point(10, 15), Width = 50 };
-                    var nudAncho = new NumericUpDown() { Minimum = 0, Maximum = 200, Value = alto, Location = new Point(10, 45), Width = 60 };
+                    var nudAncho = new NumericUpDown() { Minimum = 10, Maximum = 200, Value = alto, Location = new Point(10, 45), Width = 60 };
 
                     var lbAlto = new Label() { Text = "Alto", Location = new Point(80, 15), Width = 50 };
-                    var nudAlto = new NumericUpDown() { Minimum = 0, Maximum = 200, Value = ancho, Location = new Point(80, 45), Width = 60 };
+                    var nudAlto = new NumericUpDown() { Minimum = 10, Maximum = 200, Value = ancho, Location = new Point(80, 45), Width = 60 };
 
                     var lbFuente = new Label() { Text = "Texto", Location = new Point(150, 15), Width = 50 };
-                    var nudFuente = new NumericUpDown() { Minimum = 0, Maximum = 200, Value = tamFuente, Location = new Point(150, 45), Width = 60 };
+                    var nudFuente = new NumericUpDown() { Minimum = 1, Maximum = 200, Value = tamFuente, Location = new Point(150, 45), Width = 60 };
                     
                     var btnAceptar = new Button() { Text = "Aceptar", DialogResult = DialogResult.OK, Location = new Point(15, 80), Width = 200 };
 
