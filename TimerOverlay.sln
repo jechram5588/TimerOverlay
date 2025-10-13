@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.36227.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimerOverlay", "TimerOverlay\TimerOverlay.csproj", "{2555952F-07B0-46B7-91A1-1C1E24C6F820}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "TimerOverlay_Installer", "TimerOverlay_Installer\TimerOverlay_Installer.vdproj", "{DDE4DE27-7C15-42D8-9908-3A380F6D11B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,8 @@ Global
 		{2555952F-07B0-46B7-91A1-1C1E24C6F820}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2555952F-07B0-46B7-91A1-1C1E24C6F820}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2555952F-07B0-46B7-91A1-1C1E24C6F820}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDE4DE27-7C15-42D8-9908-3A380F6D11B3}.Debug|Any CPU.ActiveCfg = Debug
+		{DDE4DE27-7C15-42D8-9908-3A380F6D11B3}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
