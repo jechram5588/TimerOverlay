@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 
@@ -31,7 +32,7 @@ namespace TimerOverlay
         private static List<Form_TimerOverlay> instancias = new List<Form_TimerOverlay>();
 
 
-        List<string> ArchivosSonido = new List<string> { };
+        List<Sonidos> ArchivosSonido = new List<Sonidos> { };
         List<string> PerfilesApp = new List<string> { };
         private string sonidoAlerta = "";
         private string sonidoCD = "";
@@ -166,7 +167,6 @@ namespace TimerOverlay
             timerRun = new Timer();
             timerRun.Interval = 1000;
             timerRun.Tick += timerRun_Tick;
-            //timerRun.Start();
 
             timerStop = new Timer();
             timerStop.Interval = 500;
@@ -174,6 +174,7 @@ namespace TimerOverlay
 
             // Menu Contextual
             contextMenu = new ContextMenuStrip();
+            contextMenu.Items.Add(Menu_About());
             contextMenu.Items.Add(Menu_AgregarContador());
             contextMenu.Items.Add(Menu_CerrarCuadro());
             contextMenu.Items.Add(Menu_ReiniciarContador());
@@ -561,8 +562,12 @@ namespace TimerOverlay
             string[] fileNames = Directory.GetFiles(Application.StartupPath + @"\assets\")
                               .Select(Path.GetFileName)
                               .ToArray();
-            ArchivosSonido = new List<string>(fileNames);
-            ArchivosSonido.Insert(0, "Ninguno");
+            int ctn = 1;
+            foreach (var item in fileNames)
+            {
+                ArchivosSonido.Add(new Sonidos { id = ctn++, sonido = item });
+            }
+            ArchivosSonido.Insert(0, new Sonidos { id = 0, sonido= "Ninguno" });
         }
         public void ObtenerPerfiles()
         {
@@ -655,7 +660,8 @@ namespace TimerOverlay
                     MinimizeBox = false
                 })
                 {
-                    List<string> ArchivosSonidoCD = new List<string>(ArchivosSonido);
+                    List<Sonidos> SonidoAlarma = new List<Sonidos>(ArchivosSonido);
+                    List<Sonidos> SonidoCD = new List<Sonidos>(ArchivosSonido);
 
                     var lbSonido = new Label()
                     {
@@ -664,13 +670,11 @@ namespace TimerOverlay
                         AutoSize = true
                     };
 
+
                     var cbSonido = new ComboBox()
                     {
-                        DataSource = ArchivosSonido,
-                        Text = sonidoAlerta,
                         Location = new Point(10,31),
                         Width = 200,
-                        DropDownStyle = ComboBoxStyle.DropDownList
                     };
 
                     var lbSonidoCD = new Label()
@@ -682,11 +686,8 @@ namespace TimerOverlay
 
                     var cbSonidoCD = new ComboBox()
                     {
-                        DataSource = ArchivosSonidoCD,
-                        Text = sonidoAlerta,
                         Location = new Point(10, 80),
                         Width = 200,
-                        DropDownStyle = ComboBoxStyle.DropDownList
                     };
 
                     var btnPlay = new Button()
@@ -700,7 +701,7 @@ namespace TimerOverlay
                     // Agregar evento para reproducir sonido
                     btnPlay.Click += (snd, evt) =>
                     {
-                        string archivo = cbSonido.SelectedItem?.ToString();
+                        string archivo = cbSonido.Text;
                         if (!string.IsNullOrEmpty(archivo))
                         {
                             ReproduceSonido(archivo);
@@ -715,10 +716,9 @@ namespace TimerOverlay
                         Width = 50
                     };
 
-                    // Agregar evento para reproducir sonido
                     btnPlayCD.Click += (snd, evt) =>
                     {
-                        string archivo = cbSonidoCD.SelectedItem?.ToString();
+                        string archivo = cbSonidoCD.Text;
                         if (!string.IsNullOrEmpty(archivo))
                         {
                             ReproduceSonido(archivo);
@@ -740,16 +740,68 @@ namespace TimerOverlay
                     inputForm.Controls.Add(lbSonidoCD);
                     inputForm.Controls.Add(cbSonidoCD);
                     inputForm.Controls.Add(btnPlayCD);
-                    inputForm.Controls.Add(btnPlay);
-
 
                     inputForm.Controls.Add(btnAceptar);
                     inputForm.AcceptButton = btnAceptar;
+                    
+                    SeleccionaSonidoCBs();
+
+                    void SeleccionaSonidoCBs() {
+
+                        // Asignar el DataSource
+                        cbSonido.DataSource = SonidoAlarma;
+                        cbSonido.DisplayMember = "sonido";
+                        cbSonido.ValueMember = "id";
+                     
+                        // Buscar el índice exacto
+                        int index = SonidoAlarma.FindIndex(r =>
+                            r.sonido.Trim().Equals(sonidoAlerta.Trim(), StringComparison.OrdinalIgnoreCase));
+
+                        if (index >= 0)
+                        {
+                            cbSonido.SelectedIndex = index;
+                        }
+                        else
+                        {
+                            // seleccionar "Ninguno" si está
+                            var ningunoIndex = SonidoAlarma.FindIndex(s1 =>
+                                s1.sonido.Equals("Ninguno", StringComparison.OrdinalIgnoreCase));
+
+                            if (ningunoIndex >= 0)
+                                cbSonido.SelectedIndex = ningunoIndex;
+                        }
+
+                        // Para CD
+                        // Asignar el DataSource
+                        cbSonidoCD.DataSource = SonidoCD;
+                        cbSonidoCD.DisplayMember = "sonido";
+                        cbSonidoCD.ValueMember = "id";
+
+                        int indexCD = SonidoCD.FindIndex(r =>
+                            r.sonido.Trim().Equals(sonidoCD.Trim(), StringComparison.OrdinalIgnoreCase));
+
+                        if (indexCD >= 0)
+                        {
+                            cbSonidoCD.SelectedIndex = indexCD;
+                        }
+                        else
+                        {
+                            var ningunoIndex = SonidoCD.FindIndex(s1 =>
+                                s1.sonido.Equals("Ninguno", StringComparison.OrdinalIgnoreCase));
+
+                            if (ningunoIndex >= 0)
+                                cbSonidoCD.SelectedIndex = ningunoIndex;
+                        }
+
+                    }
 
                     if (inputForm.ShowDialog(this) == DialogResult.OK)
                     {
-                        sonidoAlerta = cbSonido.Text;
-                        sonidoCD = cbSonidoCD.Text;
+                        this.sonidoAlerta = cbSonido.Text;
+                        this.sonidoCD = cbSonidoCD.Text;
+                    }
+                    else {
+                        SeleccionaSonidoCBs();
                     }
                 }
             };
@@ -1220,6 +1272,62 @@ namespace TimerOverlay
             cerrartodos.Click += (s, e) => CerrarApp();
             return cerrartodos;
         }
+       
+        private ToolStripMenuItem Menu_About()
+        {
+            var aboutItem = new ToolStripMenuItem("TimerOverlay")
+            {
+                Image = Properties.Resources.iconoDefault
+            };
+
+            aboutItem.Click += (s, e) =>
+            {
+                Version version = Assembly.GetExecutingAssembly().GetName().Version;
+
+                using (var aboutForm = new Form()
+                {
+                    Text = "Acerca de TimerOverlay",
+                    Size = new Size(300, 170),
+                    FormBorderStyle = FormBorderStyle.FixedDialog,
+                    StartPosition = FormStartPosition.CenterScreen,
+                    MaximizeBox = false,
+                    MinimizeBox = false
+                })
+                {
+                    var lblTitulo = new Label()
+                    {
+                        Text = $"TimerOverlay v{version}",
+                        Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                        AutoSize = true,
+                        Location = new Point(20, 20)
+                    };
+
+                    var lblAutor = new Label()
+                    {
+                        Text = "Desarrollado por: Jech",
+                        AutoSize = true,
+                        Location = new Point(20, 60)
+                    };
+
+                    var lblContacto = new Label()
+                    {
+                        Text = "Char: Arti Shooter",
+                        AutoSize = true,
+                        Location = new Point(20, 90)
+                    };
+                   
+
+                    aboutForm.Controls.Add(lblTitulo);
+                    aboutForm.Controls.Add(lblAutor);
+                    aboutForm.Controls.Add(lblContacto);
+
+                    aboutForm.ShowDialog();
+                }
+            };
+
+            return aboutItem;
+        }
+
         private ToolStripMenuItem Menu_CerrarCuadros()
         {
             var cerrartodos = new ToolStripMenuItem("Cerrar todo")

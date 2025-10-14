@@ -97,6 +97,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="classes\Sonidos.cs" />
     <Compile Include="Form_TimerOverlay.cs">
       <SubType>Form</SubType>
     </Compile>
