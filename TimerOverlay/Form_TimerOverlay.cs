@@ -59,12 +59,11 @@ namespace TimerOverlay
         {
             if (this.ctrolImgTxt == null)
                 this.ctrolImgTxt = new ImageTextControl();
-
             this.tiempoInicial = data.Tiempo;
             this.segundosRestantes = tiempoInicial;
             this.ctrolImgTxt.Text = FormatearTiempo(segundosRestantes);
-            this.sonidoAlerta = data.SonidoAlerta;
-            this.sonidoCD = data.SonidoCD;
+            this.sonidoAlerta = data.SonidoAlerta != null ? data.SonidoAlerta : "";
+            this.sonidoCD = data.SonidoCD != null ? data.SonidoCD : "";
             this.alto = data.Alto;
             this.ancho = data.Alto;
             this.tamFuente = data.TamañoFuente;
