@@ -259,6 +259,8 @@
     </Content>
     <Content Include="favicon.ico" />
     <Content Include="imgs\paladinConfig.PNG" />
+    <None Include="Resources\iconoPlayStop.png" />
+    <None Include="Resources\iconoRestart.png" />
     <None Include="README.md" />
     <None Include="Resources\iconoClosed.png" />
     <None Include="Resources\iconoLoad.png" />

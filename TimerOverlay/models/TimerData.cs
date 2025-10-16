@@ -19,5 +19,6 @@ namespace TimerOverlay
         public int TamañoFuente { get; set; }
         public string Animacion { get; set; }
         public string SonidoCD { get; set; }
+        public string Accion { get; set; }
     }
 }

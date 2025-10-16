@@ -16,5 +16,8 @@ namespace TimerOverlay
         {
             Ninguna, Mostrar, Parpadear, MostrarConCD, ParpadearConCD
         }
+        public enum TipoAccion  {
+            Reiniciar, Pausar
+        }
     }
 }

@@ -42,6 +42,7 @@ namespace TimerOverlay
         private Keys teclaGlobal = Keys.None;
         private TipoFuncion tFuncion;
         private TipoAnimacion tAnimacion;
+        private TipoAccion tAccion;
 
         #region Constructores
         public Form_TimerOverlay(TimerData data)
@@ -83,7 +84,7 @@ namespace TimerOverlay
             }
             else
                 this.tFuncion = TipoFuncion.Temporizador;
-
+            
             // modo de animacion
             if (data.Animacion != null)
             {
@@ -91,6 +92,15 @@ namespace TimerOverlay
             }
             else
                 this.tAnimacion = TipoAnimacion.Ninguna;
+            
+            // modo de Accion
+            if (data.Accion != null)
+            {
+                this.tAccion = (TipoAccion)Enum.Parse(typeof(TipoAccion), data.Accion);
+            }
+            else
+                this.tAccion = TipoAccion.Reiniciar;
+
 
             this.teclaGlobal = (Keys)Convert.ToInt32(data.Tecla);
 
@@ -176,6 +186,7 @@ namespace TimerOverlay
             contextMenu.Items.Add(Menu_ModificarContador());
             contextMenu.Items.Add(Menu_CambiarModo());
             contextMenu.Items.Add(Menu_AsignarTecla());
+            contextMenu.Items.Add(Menu_CambiarAccion());
             contextMenu.Items.Add(Menu_ModificarTamaños());
             contextMenu.Items.Add(Menu_CambiarAnimacion());
 
@@ -188,7 +199,7 @@ namespace TimerOverlay
             contextMenu.Items.Add(Menu_CargarPerfil());
             contextMenu.Items.Add(Menu_ExportarPerfil());
             contextMenu.Items.Add(Menu_CerrarApp());
-
+            
             GlobalKeyboardHook.OnKeyPressed += GlobalKeyboardHook_OnKeyPressed;
             GlobalKeyboardHook.Start();
         }
@@ -271,10 +282,25 @@ namespace TimerOverlay
                     {
                         case TipoFuncion.Temporizador:
                         case TipoFuncion.Cronometro:
-                            if (estaEnCD)
-                                ReproduceSonido(sonidoCD);
-                            else
-                                Reiniciar();
+                            if (tAccion == TipoAccion.Reiniciar)
+                            {
+                                if(estaEnCD)
+                                    ReproduceSonido(sonidoCD);
+                                else
+                                    Reiniciar();
+                            }
+                            if (tAccion == TipoAccion.Pausar)
+                            {
+                                if (estaPausado)
+                                    Reanudar();
+                                else
+                                {
+                                    if (!timerRun.Enabled)
+                                        Reiniciar();
+                                    else
+                                        Pausar();
+                                }
+                            }
                             break;
                         case TipoFuncion.ContadorIncremental:
                             FormateaContador();
@@ -537,8 +563,9 @@ namespace TimerOverlay
                         Ancho = timer.ancho,
                         TamañoFuente = timer.tamFuente,
                         Animacion = timer.tAnimacion.ToString(),
-                        SonidoCD = timer.sonidoCD
-                    });
+                        SonidoCD = timer.sonidoCD,
+                        Accion = timer.tAccion.ToString()
+                    }); ;
                 }
             }
 
@@ -1305,19 +1332,6 @@ namespace TimerOverlay
 
             return aboutItem;
         }
-
-        private void InitializeComponent()
-        {
-            this.SuspendLayout();
-            // 
-            // Form_TimerOverlay
-            // 
-            this.ClientSize = new System.Drawing.Size(124, 84);
-            this.Name = "Form_TimerOverlay";
-            this.ResumeLayout(false);
-
-        }
-
         private ToolStripMenuItem Menu_CerrarCuadros()
         {
             var cerrartodos = new ToolStripMenuItem("Cerrar todo")
@@ -1401,6 +1415,52 @@ namespace TimerOverlay
 
             ActualizarTextoModo();
             return cambiarAnimacion;
+        }
+        private ToolStripMenuItem Menu_CambiarAccion()
+        {
+            var cambiarAccion = new ToolStripMenuItem("Cambiar acción");
+
+            // Subopciones
+            var mReiniciar = new ToolStripMenuItem("Reiniciar");
+            var mPausarReanudar = new ToolStripMenuItem("Pausar/Reanudar");
+
+            // Acción genérica para cambiar de modo
+            void CambiarAccion(TipoAccion accion)
+            {
+                tAccion = accion;
+                ActualizarTextoModo(); // si quieres que el texto cambie con el modo actual
+            }
+
+            // Eventos click de cada subopción
+            mReiniciar.Click += (s, e) => CambiarAccion(TipoAccion.Reiniciar);
+            mReiniciar.Image = Properties.Resources.iconoRestart;
+
+            mPausarReanudar.Click += (s, e) => CambiarAccion(TipoAccion.Pausar);
+            mPausarReanudar.Image = Properties.Resources.iconoPlayStop;
+
+            // Añadir subopciones al menú principal
+            cambiarAccion.DropDownItems.Add(mReiniciar);
+            cambiarAccion.DropDownItems.Add(mPausarReanudar);
+
+            // Actualizar texto/ícono si deseas reflejar el modo actual
+            void ActualizarTextoModo()
+            {
+                switch (tAccion)
+                {
+                    case TipoAccion.Reiniciar:
+                        cambiarAccion.Text = "Acción: Reiniciar";
+                        cambiarAccion.Image = Properties.Resources.iconoRestart;
+                        break;
+
+                    case TipoAccion.Pausar:
+                        cambiarAccion.Text = "Acción: Reanudar";
+                        cambiarAccion.Image = Properties.Resources.iconoPlayStop;
+                        break;
+                }
+            }
+
+            ActualizarTextoModo();
+            return cambiarAccion;
         }
         #endregion               
     }

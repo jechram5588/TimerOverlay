@@ -166,11 +166,17 @@
   <data name="iconoPlay" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\iconoPlay.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="iconoPlayStop" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\iconoPlayStop.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="iconoReiniciar" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\iconoReiniciar.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="iconoReiniciarTodo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\iconoReiniciarTodo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="iconoRestart" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\iconoRestart.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="iconoShow" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\iconoShow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

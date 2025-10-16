@@ -223,6 +223,16 @@ namespace TimerOverlay.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap iconoPlayStop {
+            get {
+                object obj = ResourceManager.GetObject("iconoPlayStop", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap iconoReiniciar {
             get {
                 object obj = ResourceManager.GetObject("iconoReiniciar", resourceCulture);
@@ -236,6 +246,16 @@ namespace TimerOverlay.Properties {
         internal static System.Drawing.Bitmap iconoReiniciarTodo {
             get {
                 object obj = ResourceManager.GetObject("iconoReiniciarTodo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap iconoRestart {
+            get {
+                object obj = ResourceManager.GetObject("iconoRestart", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
