@@ -8,7 +8,7 @@ namespace TimerOverlay
 {
     public class Sonidos
     {
-        public int id { get; set; }
-        public string sonido { get; set; }
+        public int IdSonido { get; set; }
+        public string NombreSonido { get; set; }
     }
 }

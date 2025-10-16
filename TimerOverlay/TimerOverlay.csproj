@@ -97,7 +97,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="classes\Sonidos.cs" />
+    <Compile Include="models\Sonidos.cs" />
+    <Compile Include="models\TimersEnums.cs" />
     <Compile Include="Form_TimerOverlay.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -108,7 +109,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="models\TimerData.cs" />
-    <Compile Include="models\TimerStorage.cs" />
+    <Compile Include="classes\TimerStorage.cs" />
     <EmbeddedResource Include="Form_TimerOverlay.resx">
       <DependentUpon>Form_TimerOverlay.cs</DependentUpon>
     </EmbeddedResource>

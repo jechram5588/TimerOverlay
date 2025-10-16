@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-
+using static TimerOverlay.TimersEnums;
 
 namespace TimerOverlay
 {
@@ -23,14 +23,13 @@ namespace TimerOverlay
         private int segundosRestantes = 10;
         private int contadorInicial = 10;
         private int valorInicial = 10;
-        private int alto = 10, ancho = 10,tamFuente=0;
+        private int alto = 10, ancho = 10, tamFuente = 0;
 
         private ContextMenuStrip contextMenu;
         private ImageTextControl ctrolImgTxt;
         public Image imagenIcono = null;
 
         private static List<Form_TimerOverlay> instancias = new List<Form_TimerOverlay>();
-
 
         List<Sonidos> ArchivosSonido = new List<Sonidos> { };
         List<string> PerfilesApp = new List<string> { };
@@ -41,18 +40,8 @@ namespace TimerOverlay
         private bool isDragging = false;
 
         private Keys teclaGlobal = Keys.None;
-
-        enum TipoContador
-        {
-            Temporizador, Cronometro, ContadorIncremental, ContadorDecremental
-        }
-        private TipoContador tipoContador;
-
-        enum TipoAnimacion
-        {
-            Ninguna, Mostrar, Parpadear, MostrarConCD, ParpadearConCD
-        }
-        private TipoAnimacion tipoAnimacion;
+        private TipoFuncion tFuncion;
+        private TipoAnimacion tAnimacion;
 
         #region Constructores
         public Form_TimerOverlay(TimerData data)
@@ -62,8 +51,9 @@ namespace TimerOverlay
             this.tiempoInicial = data.Tiempo;
             this.segundosRestantes = tiempoInicial;
             this.ctrolImgTxt.Text = FormatearTiempo(segundosRestantes);
-            this.sonidoAlerta = data.SonidoAlerta != null ? data.SonidoAlerta : "";
-            this.sonidoCD = data.SonidoCD != null ? data.SonidoCD : "";
+
+            this.sonidoAlerta = data.SonidoAlerta == null ? "": data.SonidoAlerta;
+            this.sonidoCD = data.SonidoCD == null ? "": data.SonidoCD;
             this.alto = data.Alto;
             this.ancho = data.Alto;
             this.tamFuente = data.TamañoFuente;
@@ -71,19 +61,19 @@ namespace TimerOverlay
             // modo de funcionamiento
             if (data.Funcion != null)
             {
-                this.tipoContador = (TipoContador)Enum.Parse(typeof(TipoContador), data.Funcion);
-                switch (tipoContador)
+                this.tFuncion = (TipoFuncion)Enum.Parse(typeof(TipoFuncion), data.Funcion);
+                switch (tFuncion)
                 {
-                    case TipoContador.Temporizador:
+                    case TipoFuncion.Temporizador:
                         this.segundosRestantes = tiempoInicial;
                         break;
-                    case TipoContador.Cronometro:
+                    case TipoFuncion.Cronometro:
                         this.segundosRestantes = 0;
                         break;
-                    case TipoContador.ContadorIncremental:
+                    case TipoFuncion.ContadorIncremental:
                         this.contadorInicial = 0;
                         break;
-                    case TipoContador.ContadorDecremental:
+                    case TipoFuncion.ContadorDecremental:
                         valorInicial = data.Contador;
                         contadorInicial = valorInicial;
                         break;
@@ -92,15 +82,15 @@ namespace TimerOverlay
                 }
             }
             else
-                this.tipoContador = TipoContador.Temporizador;
+                this.tFuncion = TipoFuncion.Temporizador;
 
             // modo de animacion
             if (data.Animacion != null)
             {
-                this.tipoAnimacion = (TipoAnimacion)Enum.Parse(typeof(TipoAnimacion), data.Animacion);
+                this.tAnimacion = (TipoAnimacion)Enum.Parse(typeof(TipoAnimacion), data.Animacion);
             }
             else
-                this.tipoAnimacion = TipoAnimacion.Ninguna;
+                this.tAnimacion = TipoAnimacion.Ninguna;
 
             this.teclaGlobal = (Keys)Convert.ToInt32(data.Tecla);
 
@@ -124,18 +114,18 @@ namespace TimerOverlay
             ctrolImgTxt = new ImageTextControl
             {
                 Location = new Point(0, 0),
-                Size = new Size(ancho,alto),
+                Size = new Size(ancho, alto),
                 fuente = tamFuente
             };
 
-            switch (tipoContador)
+            switch (tFuncion)
             {
-                case TipoContador.Temporizador:
-                case TipoContador.Cronometro:
+                case TipoFuncion.Temporizador:
+                case TipoFuncion.Cronometro:
                     ctrolImgTxt.Text = FormatearTiempo(tiempoInicial);
                     break;
-                case TipoContador.ContadorIncremental:
-                case TipoContador.ContadorDecremental:
+                case TipoFuncion.ContadorIncremental:
+                case TipoFuncion.ContadorDecremental:
                     FormateaContador();
                     break;
                 default:
@@ -152,7 +142,7 @@ namespace TimerOverlay
             }
             else
                 imagenIcono = Properties.Resources.iconoDefault;
-            
+
             this.ctrolImgTxt.Image = imagenIcono;
             this.Controls.Add(ctrolImgTxt);
 
@@ -225,22 +215,22 @@ namespace TimerOverlay
         {
             if (!estaPausado)
             {
-                switch (tipoContador)
+                switch (tFuncion)
                 {
-                    case TipoContador.Temporizador:
+                    case TipoFuncion.Temporizador:
                         segundosRestantes--;
                         if (segundosRestantes <= 0)
                         {
                             if (!timerStop.Enabled)
                             {
-                                timerRun.Enabled =false;
+                                timerRun.Enabled = false;
                                 timerStop.Enabled = true;
                                 ReproduceSonido(sonidoAlerta);
                                 ctrolImgTxt.Image = imagenIcono;
                             }
                         }
                         break;
-                    case TipoContador.Cronometro:
+                    case TipoFuncion.Cronometro:
                         segundosRestantes++;
                         if (segundosRestantes >= tiempoInicial)
                         {
@@ -253,22 +243,20 @@ namespace TimerOverlay
                             }
                         }
                         break;
-                    case TipoContador.ContadorIncremental:
-                    case TipoContador.ContadorDecremental:
+                    case TipoFuncion.ContadorIncremental:
+                    case TipoFuncion.ContadorDecremental:
                         break;
                 }
             }
+            ctrolImgTxt.Text = FormatearTiempo(segundosRestantes);
 
-           
-                ctrolImgTxt.Text = FormatearTiempo(segundosRestantes);
-           
         }
         private void timerStop_Tick(object sender, EventArgs e)
         {
             estaEnCD = false;
-            if(tipoAnimacion == TipoAnimacion.ParpadearConCD || tipoAnimacion == TipoAnimacion.Parpadear)
+            if (tAnimacion == TipoAnimacion.ParpadearConCD || tAnimacion == TipoAnimacion.Parpadear)
             {
-                ctrolImgTxt.Image = animationStop ?  null: imagenIcono;
+                ctrolImgTxt.Image = animationStop ? null : imagenIcono;
                 animationStop = !animationStop;
             }
             ctrolImgTxt.Text = "";
@@ -278,17 +266,17 @@ namespace TimerOverlay
             if (key == teclaGlobal)
             {
                 this.Invoke((MethodInvoker)(() =>
-                {                    
-                    switch (tipoContador)
+                {
+                    switch (tFuncion)
                     {
-                        case TipoContador.Temporizador:
-                        case TipoContador.Cronometro:
+                        case TipoFuncion.Temporizador:
+                        case TipoFuncion.Cronometro:
                             if (estaEnCD)
                                 ReproduceSonido(sonidoCD);
                             else
                                 Reiniciar();
                             break;
-                        case TipoContador.ContadorIncremental:
+                        case TipoFuncion.ContadorIncremental:
                             FormateaContador();
                             if (contadorInicial >= valorInicial)
                             {
@@ -297,7 +285,7 @@ namespace TimerOverlay
                             }
                             contadorInicial++;
                             break;
-                        case TipoContador.ContadorDecremental:
+                        case TipoFuncion.ContadorDecremental:
                             contadorInicial--;
                             FormateaContador();
                             if (contadorInicial <= 0)
@@ -311,7 +299,7 @@ namespace TimerOverlay
                     }
                 }));
             }
-        }      
+        }
         private void Control_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -362,7 +350,7 @@ namespace TimerOverlay
             int minutos = totalSegundos / 60;
             int segundos = totalSegundos % 60;
             string text = $"{minutos}:{segundos:D2}";
-            switch (tipoAnimacion)
+            switch (tAnimacion)
             {
                 case TipoAnimacion.Ninguna:
                 case TipoAnimacion.MostrarConCD:
@@ -371,7 +359,7 @@ namespace TimerOverlay
                 case TipoAnimacion.Parpadear:
                 case TipoAnimacion.Mostrar:
                 default:
-                    text ="";
+                    text = "";
                     break;
             }
             return text;
@@ -386,37 +374,37 @@ namespace TimerOverlay
             {
                 string path = Path.Combine(Application.StartupPath, "assets", archivo);
                 if (File.Exists(path))
-            {
-                try
                 {
-                    var audioFile = new AudioFileReader(path);
-                    var outputDevice = new WaveOutEvent();
-                    outputDevice.Init(audioFile);
-                    outputDevice.Play();
-
-                    // Timer para detener 
-                    var timer = new System.Windows.Forms.Timer();
-                    timer.Interval = 1500; 
-                    timer.Tick += (s, e) =>
+                    try
                     {
-                        timer.Stop();
-                        outputDevice.Stop(); // Detiene la reproducción
-                    };
-                    timer.Start();
+                        var audioFile = new AudioFileReader(path);
+                        var outputDevice = new WaveOutEvent();
+                        outputDevice.Init(audioFile);
+                        outputDevice.Play();
 
-                    // Liberar recursos cuando termina
-                    outputDevice.PlaybackStopped += (s, e) =>
-                    {
-                        outputDevice.Dispose();
-                        audioFile.Dispose();
-                        timer.Dispose();
+                        // Timer para detener 
+                        var timer = new System.Windows.Forms.Timer();
+                        timer.Interval = 1500;
+                        timer.Tick += (s, e) =>
+                        {
+                            timer.Stop();
+                            outputDevice.Stop(); // Detiene la reproducción
                     };
+                        timer.Start();
+
+                        // Liberar recursos cuando termina
+                        outputDevice.PlaybackStopped += (s, e) =>
+                        {
+                            outputDevice.Dispose();
+                            audioFile.Dispose();
+                            timer.Dispose();
+                        };
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 }
-                catch(Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
             }
         }
         private void Reiniciar()
@@ -425,26 +413,26 @@ namespace TimerOverlay
             timerStop.Enabled = false;
             ctrolImgTxt.Image = imagenIcono;
             estaEnCD = true;
-            if (tipoAnimacion != TipoAnimacion.Ninguna)
+            if (tAnimacion != TipoAnimacion.Ninguna)
                 ctrolImgTxt.Image = null;
 
-            switch (tipoContador)
+            switch (tFuncion)
             {
-                case TipoContador.Temporizador:
+                case TipoFuncion.Temporizador:
                     segundosRestantes = tiempoInicial;
                     ctrolImgTxt.Text = FormatearTiempo(segundosRestantes);
                     timerRun.Enabled = true;
                     break;
-                case TipoContador.Cronometro:
+                case TipoFuncion.Cronometro:
                     segundosRestantes = 0;
                     ctrolImgTxt.Text = FormatearTiempo(segundosRestantes);
                     timerRun.Enabled = true;
                     break;
-                case TipoContador.ContadorIncremental:
+                case TipoFuncion.ContadorIncremental:
                     contadorInicial = 0;
                     FormateaContador();
                     break;
-                case TipoContador.ContadorDecremental:
+                case TipoFuncion.ContadorDecremental:
                     contadorInicial = valorInicial;
                     FormateaContador();
                     break;
@@ -483,7 +471,7 @@ namespace TimerOverlay
             {
                 f.Close();
             }
-            AgregaCuadro();
+            AgregarTimer();
         }
         private void CargarPerfil(string perfil)
         {
@@ -500,12 +488,12 @@ namespace TimerOverlay
                     var frm = new Form_TimerOverlay(d);
                     frm.ShowInTaskbar = false;
                     frm.Show();
-                }                
+                }
             }
             else
             {
                 MessageBox.Show("Sin data");
-                AgregaCuadro();
+                AgregarTimer();
             }
             Properties.Settings.Default.UltimoPerfil = perfil;
             Properties.Settings.Default.Save();
@@ -542,13 +530,13 @@ namespace TimerOverlay
                         Tiempo = timer.tiempoInicial,
                         ImagenBase64 = base64,
                         SonidoAlerta = timer.sonidoAlerta,
-                        Funcion = timer.tipoContador.ToString(),
+                        Funcion = timer.tFuncion.ToString(),
                         Tecla = (int)timer.teclaGlobal,
                         Contador = timer.valorInicial,
                         Alto = timer.alto,
                         Ancho = timer.ancho,
                         TamañoFuente = timer.tamFuente,
-                        Animacion = timer.tipoAnimacion.ToString(),
+                        Animacion = timer.tAnimacion.ToString(),
                         SonidoCD = timer.sonidoCD
                     });
                 }
@@ -564,27 +552,29 @@ namespace TimerOverlay
             int ctn = 1;
             foreach (var item in fileNames)
             {
-                ArchivosSonido.Add(new Sonidos { id = ctn++, sonido = item });
+                ArchivosSonido.Add(new Sonidos { IdSonido = ctn++, NombreSonido = item });
             }
-            ArchivosSonido.Insert(0, new Sonidos { id = 0, sonido= "Ninguno" });
+            ArchivosSonido.Insert(0, new Sonidos { IdSonido = 0, NombreSonido = "Ninguno" });
         }
         public void ObtenerPerfiles()
         {
             PerfilesApp.Clear();
             PerfilesApp = TimerStorage.ObtenerPerfiles();
         }
-        public void AgregaCuadro()
+        public void AgregarTimer()
         {
             var nuevoCuadro = new Form_TimerOverlay(new TimerData
             {
                 X = 100,
                 Y = 100,
                 Tiempo = 10,
-                Alto = 50,
-                Ancho = 50,
-                TamañoFuente = 12,
-                ImagenBase64 = "" 
-            });
+                ImagenBase64 = "",
+                SonidoAlerta="",
+                Alto = 70,
+                Ancho = 70,
+                TamañoFuente = 10,
+                SonidoCD=""
+            });;
             nuevoCuadro.StartPosition = FormStartPosition.CenterScreen;
             nuevoCuadro.ShowInTaskbar = false;
             nuevoCuadro.BackColor = Color.Black;
@@ -601,7 +591,7 @@ namespace TimerOverlay
             };
             agregarCuadro.Click += (s, e) =>
             {
-                AgregaCuadro();
+                AgregarTimer();
             };
             return agregarCuadro;
         }
@@ -672,14 +662,14 @@ namespace TimerOverlay
 
                     var cbSonido = new ComboBox()
                     {
-                        Location = new Point(10,31),
+                        Location = new Point(10, 31),
                         Width = 200,
                     };
 
                     var lbSonidoCD = new Label()
                     {
                         Text = "Sonido CD",
-                        Location = new Point(10,63),
+                        Location = new Point(10, 63),
                         AutoSize = true
                     };
 
@@ -742,19 +732,20 @@ namespace TimerOverlay
 
                     inputForm.Controls.Add(btnAceptar);
                     inputForm.AcceptButton = btnAceptar;
-                    
+
                     SeleccionaSonidoCBs();
 
-                    void SeleccionaSonidoCBs() {
+                    void SeleccionaSonidoCBs()
+                    {
 
                         // Asignar el DataSource
                         cbSonido.DataSource = SonidoAlarma;
-                        cbSonido.DisplayMember = "sonido";
-                        cbSonido.ValueMember = "id";
-                     
+                        cbSonido.DisplayMember = "NombreSonido";
+                        cbSonido.ValueMember = "IdSonido";
+
                         // Buscar el índice exacto
                         int index = SonidoAlarma.FindIndex(r =>
-                            r.sonido.Trim().Equals(sonidoAlerta.Trim(), StringComparison.OrdinalIgnoreCase));
+                            r.NombreSonido.Trim().Equals(sonidoAlerta.Trim(), StringComparison.OrdinalIgnoreCase));
 
                         if (index >= 0)
                         {
@@ -764,7 +755,7 @@ namespace TimerOverlay
                         {
                             // seleccionar "Ninguno" si está
                             var ningunoIndex = SonidoAlarma.FindIndex(s1 =>
-                                s1.sonido.Equals("Ninguno", StringComparison.OrdinalIgnoreCase));
+                                s1.NombreSonido.Equals("Ninguno", StringComparison.OrdinalIgnoreCase));
 
                             if (ningunoIndex >= 0)
                                 cbSonido.SelectedIndex = ningunoIndex;
@@ -773,11 +764,11 @@ namespace TimerOverlay
                         // Para CD
                         // Asignar el DataSource
                         cbSonidoCD.DataSource = SonidoCD;
-                        cbSonidoCD.DisplayMember = "sonido";
-                        cbSonidoCD.ValueMember = "id";
+                        cbSonidoCD.DisplayMember = "NombreSonido";
+                        cbSonidoCD.ValueMember = "IdSonido";
 
                         int indexCD = SonidoCD.FindIndex(r =>
-                            r.sonido.Trim().Equals(sonidoCD.Trim(), StringComparison.OrdinalIgnoreCase));
+                            r.NombreSonido.Trim().Equals(sonidoCD.Trim(), StringComparison.OrdinalIgnoreCase));
 
                         if (indexCD >= 0)
                         {
@@ -786,7 +777,7 @@ namespace TimerOverlay
                         else
                         {
                             var ningunoIndex = SonidoCD.FindIndex(s1 =>
-                                s1.sonido.Equals("Ninguno", StringComparison.OrdinalIgnoreCase));
+                                s1.NombreSonido.Equals("Ninguno", StringComparison.OrdinalIgnoreCase));
 
                             if (ningunoIndex >= 0)
                                 cbSonidoCD.SelectedIndex = ningunoIndex;
@@ -799,7 +790,8 @@ namespace TimerOverlay
                         this.sonidoAlerta = cbSonido.Text;
                         this.sonidoCD = cbSonidoCD.Text;
                     }
-                    else {
+                    else
+                    {
                         SeleccionaSonidoCBs();
                     }
                 }
@@ -881,7 +873,7 @@ namespace TimerOverlay
                     if (inputForm.ShowDialog(this) == DialogResult.OK)
                     {
                         valorInicial = (int)nudValor.Value;
-                        if (tipoContador == TipoContador.ContadorDecremental)
+                        if (tFuncion == TipoFuncion.ContadorDecremental)
                             contadorInicial = valorInicial;
                         else
                             contadorInicial = 0;
@@ -920,7 +912,7 @@ namespace TimerOverlay
 
                     var lbFuente = new Label() { Text = "Texto", Location = new Point(150, 15), Width = 50 };
                     var nudFuente = new NumericUpDown() { Minimum = 1, Maximum = 200, Value = tamFuente, Location = new Point(150, 45), Width = 60 };
-                    
+
                     var btnAceptar = new Button() { Text = "Aceptar", DialogResult = DialogResult.OK, Location = new Point(15, 80), Width = 200 };
 
                     inputForm.Controls.Add(lbAncho);
@@ -934,8 +926,8 @@ namespace TimerOverlay
 
                     if (inputForm.ShowDialog(this) == DialogResult.OK)
                     {
-                        ancho = (int)nudAlto.Value; 
-                        alto= (int)nudAncho.Value;
+                        ancho = (int)nudAlto.Value;
+                        alto = (int)nudAncho.Value;
                         tamFuente = (int)nudFuente.Value;
                         ctrolImgTxt.Size = new Size(ancho, alto);
                         ctrolImgTxt.fuente = tamFuente;
@@ -955,24 +947,24 @@ namespace TimerOverlay
             var modoDecremental = new ToolStripMenuItem("Contador Decremental");
 
             // Acción genérica para cambiar de modo
-            void CambiarModo(TipoContador nuevoModo)
+            void CambiarModo(TipoFuncion nuevoModo)
             {
-                tipoContador = nuevoModo;
+                tFuncion = nuevoModo;
                 ActualizarTextoModo(); // si quieres que el texto cambie con el modo actual
                 Reiniciar();
             }
 
             // Eventos click de cada subopción
-            modoTemporizador.Click += (s, e) => CambiarModo(TipoContador.Temporizador);
+            modoTemporizador.Click += (s, e) => CambiarModo(TipoFuncion.Temporizador);
             modoTemporizador.Image = Properties.Resources.iconoTemporizador;
 
-            modoCronometro.Click += (s, e) => CambiarModo(TipoContador.Cronometro);
+            modoCronometro.Click += (s, e) => CambiarModo(TipoFuncion.Cronometro);
             modoCronometro.Image = Properties.Resources.iconoCronometro;
 
-            modoIncremental.Click += (s, e) => CambiarModo(TipoContador.ContadorIncremental);
+            modoIncremental.Click += (s, e) => CambiarModo(TipoFuncion.ContadorIncremental);
             modoIncremental.Image = Properties.Resources.iconoChartUp;
 
-            modoDecremental.Click += (s, e) => CambiarModo(TipoContador.ContadorDecremental);
+            modoDecremental.Click += (s, e) => CambiarModo(TipoFuncion.ContadorDecremental);
             modoDecremental.Image = Properties.Resources.iconoChartDown;
 
 
@@ -985,24 +977,24 @@ namespace TimerOverlay
             // Actualizar texto/ícono si deseas reflejar el modo actual
             void ActualizarTextoModo()
             {
-                switch (tipoContador)
+                switch (tFuncion)
                 {
-                    case TipoContador.Temporizador:
+                    case TipoFuncion.Temporizador:
                         cambiarModo.Text = "Modo actual: Temporizador";
                         cambiarModo.Image = Properties.Resources.iconoTemporizador;
                         break;
 
-                    case TipoContador.Cronometro:
+                    case TipoFuncion.Cronometro:
                         cambiarModo.Text = "Modo actual: Cronómetro";
                         cambiarModo.Image = Properties.Resources.iconoCronometro;
                         break;
 
-                    case TipoContador.ContadorIncremental:
+                    case TipoFuncion.ContadorIncremental:
                         cambiarModo.Text = "Modo actual: Incremental";
                         cambiarModo.Image = Properties.Resources.iconoChartUp;
                         break;
 
-                    case TipoContador.ContadorDecremental:
+                    case TipoFuncion.ContadorDecremental:
                         cambiarModo.Text = "Modo actual: Decremental";
                         cambiarModo.Image = Properties.Resources.iconoChartDown;
                         break;
@@ -1228,13 +1220,14 @@ namespace TimerOverlay
 
                 comboPerfiles.SelectedItem = Properties.Settings.Default.UltimoPerfil;
 
-                btnExportar.Click += (senderBtn, evt) => {
+                btnExportar.Click += (senderBtn, evt) =>
+                {
                     if (comboPerfiles.SelectedItem != null)
                     {
                         string perfilSeleccionado = comboPerfiles.SelectedItem.ToString();
-                        CargarPerfil(perfilSeleccionado); 
-                        ventana.Close(); 
-                    } 
+                        CargarPerfil(perfilSeleccionado);
+                        ventana.Close();
+                    }
                     else
                         MessageBox.Show("Selecciona un perfil.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 };
@@ -1249,19 +1242,6 @@ namespace TimerOverlay
 
             return exportar;
         }
-
-        private void InitializeComponent()
-        {
-            this.SuspendLayout();
-            // 
-            // Form_TimerOverlay
-            // 
-            this.ClientSize = new System.Drawing.Size(127, 93);
-            this.Name = "Form_TimerOverlay";
-            this.ResumeLayout(false);
-
-        }
-
         private ToolStripMenuItem Menu_CerrarApp()
         {
             var cerrartodos = new ToolStripMenuItem("Salir")
@@ -1271,7 +1251,6 @@ namespace TimerOverlay
             cerrartodos.Click += (s, e) => CerrarApp();
             return cerrartodos;
         }
-       
         private ToolStripMenuItem Menu_About()
         {
             var aboutItem = new ToolStripMenuItem("TimerOverlay")
@@ -1314,7 +1293,7 @@ namespace TimerOverlay
                         AutoSize = true,
                         Location = new Point(20, 90)
                     };
-                   
+
 
                     aboutForm.Controls.Add(lblTitulo);
                     aboutForm.Controls.Add(lblAutor);
@@ -1325,6 +1304,18 @@ namespace TimerOverlay
             };
 
             return aboutItem;
+        }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // Form_TimerOverlay
+            // 
+            this.ClientSize = new System.Drawing.Size(124, 84);
+            this.Name = "Form_TimerOverlay";
+            this.ResumeLayout(false);
+
         }
 
         private ToolStripMenuItem Menu_CerrarCuadros()
@@ -1350,7 +1341,7 @@ namespace TimerOverlay
             // Acción genérica para cambiar de modo
             void CambiarAnimacion(TipoAnimacion nuevaAnimacion)
             {
-                tipoAnimacion = nuevaAnimacion;
+                tAnimacion = nuevaAnimacion;
                 ActualizarTextoModo(); // si quieres que el texto cambie con el modo actual
                 Reiniciar();
             }
@@ -1382,7 +1373,7 @@ namespace TimerOverlay
             // Actualizar texto/ícono si deseas reflejar el modo actual
             void ActualizarTextoModo()
             {
-                switch (tipoAnimacion)
+                switch (tAnimacion)
                 {
                     case TipoAnimacion.Ninguna:
                         cambiarAnimacion.Text = "Animación: Ninguna";
