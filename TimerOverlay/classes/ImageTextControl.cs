@@ -58,8 +58,8 @@ namespace TimerOverlay
                     SizeF textSize = g.MeasureString(_text, font);
 
                     // Calculamos la posición del rectángulo para centrarlo
-                    float rectX = (this.Width - textSize.Width) / 2 - 2; // Un poco de margen
-                    float rectY = (this.Height - textSize.Height) / 2 - 1;
+                    float rectX = (this.Width - textSize.Width) / 2; 
+                    float rectY = (this.Height - textSize.Height) / 2;
                     float rectWidth = textSize.Width;
                     float rectHeight = textSize.Height;
 

@@ -56,7 +56,8 @@ namespace TimerOverlay
             this.sonidoAlerta = data.SonidoAlerta == null ? "": data.SonidoAlerta;
             this.sonidoCD = data.SonidoCD == null ? "": data.SonidoCD;
             this.alto = data.Alto;
-            this.ancho = data.Alto;
+            this.ancho = data.Ancho;
+            this.Size = new Size(ancho,alto);
             this.tamFuente = data.TamañoFuente;
 
             // modo de funcionamiento
@@ -597,8 +598,8 @@ namespace TimerOverlay
                 Tiempo = 10,
                 ImagenBase64 = "",
                 SonidoAlerta="",
-                Alto = 70,
-                Ancho = 70,
+                Alto = 50,
+                Ancho = 50,
                 TamañoFuente = 10,
                 SonidoCD=""
             });;
@@ -932,13 +933,13 @@ namespace TimerOverlay
                 })
                 {
                     var lbAncho = new Label() { Text = "Ancho", Location = new Point(10, 15), Width = 50 };
-                    var nudAncho = new NumericUpDown() { Minimum = 10, Maximum = 200, Value = alto, Location = new Point(10, 45), Width = 60 };
+                    var nudAncho = new NumericUpDown() { Minimum = 1, Maximum = 700, Value = ancho, Location = new Point(10, 45), Width = 60 };
 
                     var lbAlto = new Label() { Text = "Alto", Location = new Point(80, 15), Width = 50 };
-                    var nudAlto = new NumericUpDown() { Minimum = 10, Maximum = 200, Value = ancho, Location = new Point(80, 45), Width = 60 };
+                    var nudAlto = new NumericUpDown() { Minimum = 1, Maximum = 700, Value = alto, Location = new Point(80, 45), Width = 60 };
 
                     var lbFuente = new Label() { Text = "Texto", Location = new Point(150, 15), Width = 50 };
-                    var nudFuente = new NumericUpDown() { Minimum = 1, Maximum = 200, Value = tamFuente, Location = new Point(150, 45), Width = 60 };
+                    var nudFuente = new NumericUpDown() { Minimum = 1, Maximum = 50, Value = tamFuente, Location = new Point(150, 45), Width = 60 };
 
                     var btnAceptar = new Button() { Text = "Aceptar", DialogResult = DialogResult.OK, Location = new Point(15, 80), Width = 200 };
 
@@ -953,10 +954,11 @@ namespace TimerOverlay
 
                     if (inputForm.ShowDialog(this) == DialogResult.OK)
                     {
-                        ancho = (int)nudAlto.Value;
-                        alto = (int)nudAncho.Value;
+                        alto = (int)nudAlto.Value;
+                        ancho = (int)nudAncho.Value;
                         tamFuente = (int)nudFuente.Value;
                         ctrolImgTxt.Size = new Size(ancho, alto);
+                        this.Size = ctrolImgTxt.Size;
                         ctrolImgTxt.fuente = tamFuente;
                     }
                 }
@@ -1341,6 +1343,19 @@ namespace TimerOverlay
             cerrartodos.Click += (s, e) => CerrarTodos();
             return cerrartodos;
         }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // Form_TimerOverlay
+            // 
+            this.ClientSize = new System.Drawing.Size(684, 661);
+            this.Name = "Form_TimerOverlay";
+            this.ResumeLayout(false);
+
+        }
+
         private ToolStripMenuItem Menu_CambiarAnimacion()
         {
             var cambiarAnimacion = new ToolStripMenuItem("Cambiar animación");
